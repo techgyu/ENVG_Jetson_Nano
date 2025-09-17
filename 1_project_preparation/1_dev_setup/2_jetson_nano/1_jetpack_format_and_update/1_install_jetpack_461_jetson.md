@@ -1,4 +1,4 @@
-# Jetson Nano SD 카드 포맷 매뉴얼
+# 2025-09-14 |Jetson Nano SD 카드 포맷 매뉴얼
 
 ---
 

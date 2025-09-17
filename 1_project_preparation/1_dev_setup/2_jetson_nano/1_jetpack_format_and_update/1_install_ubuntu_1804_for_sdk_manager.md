@@ -1,4 +1,4 @@
-# 2025-09-14 (일요일) | Desktop Ubuntu 포멧 로그
+# 2025-09-14 | Desktop Ubuntu 포멧 로그
 
 ---
 

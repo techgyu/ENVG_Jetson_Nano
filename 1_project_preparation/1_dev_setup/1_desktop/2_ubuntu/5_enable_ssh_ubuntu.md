@@ -1,8 +1,6 @@
-# 2025-09-15 (월요일) | Desktop SSH 설정 로그 (Windows & Ubuntu)
+# 2025-09-16 | Desktop Ubuntu SSH 개방
 
 ---
-
-# Ubuntu SSH 설정
 
 ## 1. OpenSSH Server 설치
 1. 터미널 열기 (Ctrl + Alt + T)
@@ -29,63 +27,33 @@
    sudo systemctl enable ssh
    ```
 
-## 3. 방화벽 설정 (UFW 사용 시)
-1. UFW 상태 확인:
-   ```bash
-   sudo ufw status
-   ```
-2. SSH 포트(22) 허용:
-   ```bash
-   sudo ufw allow ssh
-   ```
-   또는
-   ```bash
-   sudo ufw allow 22
-   ```
+## 4. IP 주소 확인 및 WIFI 주소 DHCP 고정 설정
+1. 공유기 관리자 페이지를 통해서 DHCP 할당 가능 범위 확인
+- 예: 코넷 DHCP 할당 범위:
+- 예: 프리미엄 DHCP 할당 범위:
 
-## 4. IP 주소 확인 및 포트포워딩
-1. Ubuntu IP 주소 확인:
-   ```bash
-   ip addr show
-   ```
-   또는
-   ```bash
-   hostname -I
-   ```
-2. 공유기 포트포워딩 설정 (Windows와 동일)
-   - 내부 IP: Ubuntu IP 주소
-   - 내부 포트: 22
-   - 외부 포트: 원하는 포트 번호
+2. WIFI에서 받아오는 IP 주소 DHCP 고정 설정
+- Ubuntu의 WIFI 주소 설정에서 수동(manual) IP 주소 설정
+- 단, IP 설정 시, 1번에서 설정한 코넷 DHCP 할당 범위와 프리미엄 DHCP 할당 범위 외에서 설정
+- 만약 자동 할당되는 IP 주소와 겹칠 시, 네트워크 충돌 발생
+- Netmask는 ip a 명령어를 통해 IPv4 주소 뒤에 /24로 표시되어 있으면 255.255.255.0으로 설정
+- 게이트웨이는 공유기 IP 주소로 설정
 
-## 5. SSH 서버 접속 테스트
+3. WIFI 중단 후 재연결
+
+## 5. 공유기 포트포워딩 설정
+   - 공유기 IP 주소 접속 후 관리자 로그인
+   - 포트포워딩 항목에서 2에서 고정 설정해둔 IP 주소를 입력
+  
+## 6. 외부망에서 SSH 서버 접속 테스트
 1. 동일 PC에서 접속 테스트:
    ```bash
    ssh localhost
    ```
 2. 다른 PC에서 접속:
    ```bash
-   ssh 사용자명@Ubuntu_IP주소
+   ssh -p <포트번호> 사용자명@Ubuntu_IP주소(외부 공인 IP 주소)
    ```
 3. 최초 접속 시 Ubuntu 사용자 계정 비밀번호 입력
-
-## 6. SSH 설정 파일 수정 (선택사항)
-1. SSH 설정 파일 편집:
-   ```bash
-   sudo nano /etc/ssh/sshd_config
-   ```
-2. 주요 설정 옵션:
-   - `Port 22` → 포트 변경
-   - `PasswordAuthentication yes` → 비밀번호 인증 허용/거부
-   - `PermitRootLogin no` → root 계정 로그인 허용/거부
-3. 설정 변경 후 SSH 서비스 재시작:
-   ```bash
-   sudo systemctl restart ssh
-   ```
-
-## 7. Ubuntu 기타 참고 사항
-- SSH 로그 확인: `sudo journalctl -u ssh`
-- SSH 연결 로그: `/var/log/auth.log`
-- 기본적으로 SSH는 22번 포트 사용
-- 보안을 위해 키 기반 인증 설정 권장
 
 ---
