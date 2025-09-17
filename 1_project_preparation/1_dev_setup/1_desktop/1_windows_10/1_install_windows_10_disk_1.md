@@ -1,4 +1,4 @@
-# 2025-09-15 | Desktop 1번 디스크에 Windows 10 설치 로그
+# 2025-09-15 | Desktop 1번 디스크에 Windows 10 설치
 
 ---
 

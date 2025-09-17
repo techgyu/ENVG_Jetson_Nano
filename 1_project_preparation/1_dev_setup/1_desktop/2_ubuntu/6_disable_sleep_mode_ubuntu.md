@@ -1,4 +1,4 @@
-# 2025-09-16 | Dekstop Ubuntu 절전 모드 해제
+# 2025-09-16 | Desktop Ubuntu 절전 모드 해제
 
 ---
 

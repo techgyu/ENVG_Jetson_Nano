@@ -1,4 +1,4 @@
-# 2025-09-15 (월요일) | Desktop Windows 10 SSH 설정 로그
+# 2025-09-15 | Desktop Windows 10 SSH 설정 로그
 
 ---
 ## 1. OpenSSH 설치 및 활성화
