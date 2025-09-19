@@ -99,3 +99,13 @@ git commit -m "로컬 변경사항 반영"
 ```bash
 git push origin main
 ```
+
+6. 원격 저장소의 최신 상태 가져오기
+```bash
+git fetch origin
+```
+
+7. 원격과 로컬 브랜치의 차이점 확인
+```bash
+git log HEAD..origin/main --oneline
+```
