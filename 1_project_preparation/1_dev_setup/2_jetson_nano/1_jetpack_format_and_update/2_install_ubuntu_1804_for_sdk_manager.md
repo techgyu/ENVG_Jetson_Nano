@@ -1,4 +1,4 @@
-# 2025-09-14 | Desktop Ubuntu 포멧 로그
+# 2025-09-14 | Desktop Ubuntu 18.04 설치(NVIDIA SDK Manager 용도)
 
 ---
 

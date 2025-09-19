@@ -10,3 +10,9 @@
 - 이 파일을 편집하여 GRUB의 동작 방식을 변경할 수 있음
 
 ## 3. 기존에 Windows Boot Manager가 있으면, 자동으로 GRUB에 추가되어 2개의 OS 중 선택하여 부팅 설정 됌.
+
+## 4. Ubuntu에서 Windows로 부팅 수선 변경 방법
+```bash
+sudo grub-reboot "Windows Boot Manager (on /dev/nvme1n1p1)"
+sudo reboot
+```

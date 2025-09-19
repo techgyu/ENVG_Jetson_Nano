@@ -1,6 +1,7 @@
 # 2025-09-14 (일요일) | Windows 노트북에서 Jetson Nano 원격 연결 설정 로그
 
 ---
+
 ## 1. 사용할 프로그램 준비: NoMachine 사용
 - NoMachine 공식 사이트(https://www.nomachine.com/download)에서 Windows용 NoMachine 클라이언트 다운로드 및 설치
 - Windows 노트북과 Jetson Nano가 동일 네트워크에 연결되어 있는지 확인
@@ -12,6 +13,7 @@
 - 동일 네트워크 내에서는 접속 가능하지만, 외부 망에서는 접속 불가
 - 이 부분에 대한 추가 해결책 설정 필요
 - SSH 설정 후에 재 시도 예정
+  
 ---
 
 ## 4. 추가 Remote Connection 방법 검토
@@ -23,3 +25,5 @@
 
 ### TeamViewer
 [Team viewer를 사용하여 Jetson nano 원격으로 제어하기](https://blog.naver.com/junghs1040/222578654757)
+
+---
