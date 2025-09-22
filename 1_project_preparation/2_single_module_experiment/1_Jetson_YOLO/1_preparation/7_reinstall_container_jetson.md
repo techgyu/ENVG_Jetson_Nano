@@ -776,3 +776,15 @@ The aliases was originally deprecated in NumPy 1.20; for more details and guidan
 root@4d964ff22ba6:/workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_single_module_experiment/1_Jetson_YOLO/1_preparation#
 
 ```
+
+**출력 결과 재 확인: 코드 실행 전 후 주요 라이브러리 셋에 변경 사항이 있는지 체크하기 위함**
+```bash
+root@4d964ff22ba6:/ultralytics# python3 -c "import numpy; print(numpy.__version__)"
+1.24.4
+root@4d964ff22ba6:/ultralytics# python3 -c "import torch; print(torch.__version__)"
+1.11.0a0+gitbc2c6ed
+root@4d964ff22ba6:/ultralytics# python3 -c "import tensorrt; print(tensorrt.__version__)"
+8.2.0.6
+root@4d964ff22ba6:/ultralytics# python3 -c "import ultralytics; print(ultralytics.__version__)"
+8.3.202
+```
