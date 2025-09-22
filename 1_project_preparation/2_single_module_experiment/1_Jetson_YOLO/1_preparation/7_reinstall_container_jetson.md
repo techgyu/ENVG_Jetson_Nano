@@ -1,4 +1,4 @@
-# 2025-09-20 | 컨테이너, 이미지 삭제 후 재설치
+# 2025-09-20 | Jetson Nano 컨테이너, 이미지 삭제 후 재설치
 
 ---
 ## 0. 컨테이너 목록 확인
@@ -777,7 +777,10 @@ root@4d964ff22ba6:/workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_si
 
 ```
 
-**출력 결과 재 확인: 코드 실행 전 후 주요 라이브러리 셋에 변경 사항이 있는지 체크하기 위함**
+# 2025-09-22 | np.bool 오류 해결 시도
+
+## 17. 출력 결과 재 확인: 코드 실행 전 후 주요 라이브러리 셋에 변경 사항이 있는지 체크하기 위함
+- 주요 라이브러리 변경 사항 없음
 ```bash
 root@4d964ff22ba6:/ultralytics# python3 -c "import numpy; print(numpy.__version__)"
 1.24.4
@@ -788,3 +791,1033 @@ root@4d964ff22ba6:/ultralytics# python3 -c "import tensorrt; print(tensorrt.__ve
 root@4d964ff22ba6:/ultralytics# python3 -c "import ultralytics; print(ultralytics.__version__)"
 8.3.202
 ```
+
+## 18. np.bool 오류 방지 코드 추가
+```python
+import numpy as np
+if not hasattr(np, 'bool'):
+    np.bool = bool
+```
+
+## 19. 파일 실행
+```bash
+python3 test2_yolo11n_tensorRT.py
+```
+
+**출력 결과 로그**
+```bash
+root@4d964ff22ba6:/workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_single_module_experiment/1_Jetson_YOLO/1_preparation# python3 test2_yolo11n_tensorRT.py
+test2_yolo11n_tensorRT.py:2: FutureWarning: In the future `np.bool` will be defined as the corresponding NumPy scalar.   
+  if not hasattr(np, 'bool'):
+WARNING ⚠️ TensorRT requires GPU export, automatically assigning device=0
+Ultralytics 8.3.202 🚀 Python-3.8.0 torch-1.11.0a0+gitbc2c6ed CUDA:0 (NVIDIA Tegra X1, 3964MiB)
+YOLO11n summary (fused): 100 layers, 2,616,248 parameters, 0 gradients, 6.5 GFLOPs
+
+PyTorch: starting from 'yolo11n.pt' with input shape (1, 3, 640, 640) BCHW and output shape(s) (1, 84, 8400) (5.4 MB)
+
+ONNX: starting export with onnx 1.12.0 opset 14...
+WARNING: The shape inference of prim::Constant type is missing, so it may result in wrong shape inference for the exported graph. Please consider adding it in symbolic function.
+WARNING: The shape inference of prim::Constant type is missing, so it may result in wrong shape inference for the exported graph. Please consider adding it in symbolic function.
+WARNING: The shape inference of prim::Constant type is missing, so it may result in wrong shape inference for the exported graph. Please consider adding it in symbolic function.
+WARNING: The shape inference of prim::Constant type is missing, so it may result in wrong shape inference for the exported graph. Please consider adding it in symbolic function.
+WARNING: The shape inference of prim::Constant type is missing, so it may result in wrong shape inference for the exported graph. Please consider adding it in symbolic function.
+WARNING: The shape inference of prim::Constant type is missing, so it may result in wrong shape inference for the exported graph. Please consider adding it in symbolic function.
+WARNING ⚠️ ONNX: simplifier failure: FLOAT8E4M3FN
+ONNX: export success ✅ 15.4s, saved as 'yolo11n.onnx' (10.2 MB)
+
+TensorRT: starting export with TensorRT 8.2.0.6...
+[09/22/2025-01:25:14] [TRT] [I] [MemUsageChange] Init CUDA: CPU +210, GPU +0, now: CPU 1465, GPU 3696 (MiB)
+[09/22/2025-01:25:15] [TRT] [I] [MemUsageSnapshot] Begin constructing builder kernel library: CPU 1465 MiB, GPU 3687 MiB
+[09/22/2025-01:25:15] [TRT] [I] [MemUsageSnapshot] End constructing builder kernel library: CPU 1495 MiB, GPU 3691 MiB
+[09/22/2025-01:25:15] [TRT] [I] ----------------------------------------------------------------
+[09/22/2025-01:25:15] [TRT] [I] Input filename:   yolo11n.onnx
+[09/22/2025-01:25:15] [TRT] [I] ONNX IR version:  0.0.7
+[09/22/2025-01:25:15] [TRT] [I] Opset version:    14
+[09/22/2025-01:25:15] [TRT] [I] Producer name:    pytorch
+[09/22/2025-01:25:15] [TRT] [I] Producer version: 1.11.0
+[09/22/2025-01:25:15] [TRT] [I] Domain:
+[09/22/2025-01:25:15] [TRT] [I] Model version:    0
+[09/22/2025-01:25:15] [TRT] [I] Doc string:
+[09/22/2025-01:25:15] [TRT] [I] ----------------------------------------------------------------
+[09/22/2025-01:25:15] [TRT] [W] onnx2trt_utils.cpp:366: Your ONNX model has been generated with INT64 weights, while TensorRT does not natively support INT64. Attempting to cast down to INT32.
+TensorRT: input "images" with shape(1, 3, 640, 640) DataType.FLOAT
+TensorRT: output "output0" with shape(1, 84, 8400) DataType.FLOAT
+TensorRT: building FP32 engine as yolo11n.engine
+[09/22/2025-01:25:16] [TRT] [I] ---------- Layers Running on DLA ----------
+[09/22/2025-01:25:16] [TRT] [I] ---------- Layers Running on GPU ----------
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_0
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_1), Mul_2)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_3
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_4), Mul_5)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_6
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_7), Mul_8)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Split_10
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Split_10_0
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_11
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_12), Mul_13)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_14
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(PWN(Sigmoid_15), Mul_16), Add_17)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] input.12 copy
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_19
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_20), Mul_21)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_22
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_23), Mul_24)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_25
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_26), Mul_27)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_30
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_31), Mul_32)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_33
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(PWN(Sigmoid_34), Mul_35), Add_36)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] onnx::Concat_206 copy
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] input.40 copy
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_38
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_39), Mul_40)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_41
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_42), Mul_43)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_44
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_45), Mul_46)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_49 || Conv_66
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_50), Mul_51)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_67), Mul_68)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_52
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_53), Mul_54)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_55
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(PWN(Sigmoid_56), Mul_57), Add_58)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_59
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_60), Mul_61)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_62
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(PWN(Sigmoid_63), Mul_64), Add_65)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_70
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_71), Mul_72)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] onnx::Concat_226 copy
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] input.68 copy
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_74
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_75), Mul_76)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_77
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_78), Mul_79)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_80
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_81), Mul_82)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_85 || Conv_102
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_86), Mul_87)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_103), Mul_104)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_88
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_89), Mul_90)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_91
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(PWN(Sigmoid_92), Mul_93), Add_94)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_95
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_96), Mul_97)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_98
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(PWN(Sigmoid_99), Mul_100), Add_101)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_106
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_107), Mul_108)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] onnx::Concat_263 copy
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] input.124 copy
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_110
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_111), Mul_112)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_113
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_114), Mul_115)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] MaxPool_116
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] MaxPool_117
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] MaxPool_118
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] onnx::MaxPool_295 copy
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] onnx::MaxPool_296 copy
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] onnx::MaxPool_297 copy
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] onnx::Concat_298 copy
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_120
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_121), Mul_122)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_123
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_124), Mul_125)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Split_127_4
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_128
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Reshape_129
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Split_131
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Split_131_5
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Split_131_6
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Reshape_140
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] MatMul_133
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] onnx::Mul_333 + (Unnamed Layer* 136) [Shuffle] + Mul_135
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Softmax_136
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] MatMul_138
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Reshape_139
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_141 + Add_142
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_143 + Add_144
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_145
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_146), Mul_147)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_148 + Add_149
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] onnx::Concat_307 copy
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] onnx::Concat_366 copy
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_151
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_152), Mul_153)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Resize_154
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] onnx::Concat_375 copy
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_156
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_157), Mul_158)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_161
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_162), Mul_163)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_164
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(PWN(Sigmoid_165), Mul_166), Add_167)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] onnx::Concat_381 copy
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] input.224 copy
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_169
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_170), Mul_171)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Resize_172
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] onnx::Concat_398 copy
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_174
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_175), Mul_176)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_179
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_180), Mul_181)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_182
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(PWN(Sigmoid_183), Mul_184), Add_185)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] onnx::Concat_404 copy
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] input.252 copy
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_187
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_188), Mul_189)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_190
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_247
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_254
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_191), Mul_192)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_248), Mul_249)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_255), Mul_256)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] onnx::Resize_393 copy
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_250
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_257
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_194
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_251), Mul_252)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_258), Mul_259)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_195), Mul_196)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_253
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_260
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_199
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_261), Mul_262)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_263
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_200), Mul_201)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_202
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_264), Mul_265)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_266
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(PWN(Sigmoid_203), Mul_204), Add_205)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] onnx::Concat_425 copy
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] input.284 copy
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_207
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_208), Mul_209)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Reshape_316
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_210
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_268
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_275
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_211), Mul_212)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_269), Mul_270)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_276), Mul_277)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] onnx::Resize_370 copy
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_271
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_278
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_214
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_272), Mul_273)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_279), Mul_280)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_215), Mul_216)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_274
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_281
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_219 || Conv_236
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_282), Mul_283)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_284
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_220), Mul_221)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_237), Mul_238)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_222
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_285), Mul_286)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_287
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_223), Mul_224)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_225
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Reshape_320
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(PWN(Sigmoid_226), Mul_227), Add_228)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_229
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_230), Mul_231)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_232
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(PWN(Sigmoid_233), Mul_234), Add_235)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_240
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_241), Mul_242)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] onnx::Concat_446 copy
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] input.316 copy
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_244
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_245), Mul_246)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_289
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_296
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_290), Mul_291)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_297), Mul_298)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_292
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_299
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_293), Mul_294)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_300), Mul_301)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_295
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_302
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_303), Mul_304)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_305
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_306), Mul_307)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_308
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Reshape_324
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] onnx::Concat_551 copy
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] onnx::Concat_561 copy
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] onnx::Concat_571 copy
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Split_327
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Split_327_11
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Reshape_339 + Transpose_340
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Softmax_341
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Conv_342
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Reshape_348
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Slice_359
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Slice_362
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] onnx::Sub_620
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Sub_364
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] onnx::Add_622
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Add_366
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(onnx::Div_625 + (Unnamed Layer* 413) [Shuffle], PWN(Add_367, Div_369))    
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Sub_370
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] onnx::Concat_626 copy
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] onnx::Concat_627 copy
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] onnx::Mul_629 + (Unnamed Layer* 418) [Shuffle]
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] Mul_373
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] PWN(Sigmoid_374)
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] onnx::Concat_630 copy
+[09/22/2025-01:25:16] [TRT] [I] [GpuLayer] onnx::Concat_631 copy
+[09/22/2025-01:25:16] [TRT] [I] [MemUsageChange] Init cuBLAS/cuBLASLt: CPU +0, GPU +0, now: CPU 1507, GPU 3690 (MiB)     
+[09/22/2025-01:25:22] [TRT] [I] [MemUsageChange] Init cuDNN: CPU +241, GPU +37, now: CPU 1748, GPU 3727 (MiB)
+[09/22/2025-01:25:24] [TRT] [I] Local timing cache in use. Profiling results in this builder pass will not be stored.    
+[09/22/2025-01:25:44] [TRT] [I] Some tactics do not have sufficient workspace memory to run. Increasing workspace size may increase performance, please check verbose output.
+[09/22/2025-01:28:27] [TRT] [I] Detected 1 inputs and 3 output network tensors.
+[09/22/2025-01:28:28] [TRT] [I] Total Host Persistent Memory: 195184
+[09/22/2025-01:28:28] [TRT] [I] Total Device Persistent Memory: 14257664
+[09/22/2025-01:28:28] [TRT] [I] Total Scratch Memory: 0
+[09/22/2025-01:28:28] [TRT] [I] [MemUsageStats] Peak memory usage of TRT CPU/GPU memory allocators: CPU 2 MiB, GPU 171 MiB
+[09/22/2025-01:28:28] [TRT] [I] [BlockAssignment] Algorithm ShiftNTopDown took 194.956ms to assign 10 blocks to 195 nodes requiring 19456002 bytes.
+[09/22/2025-01:28:28] [TRT] [I] Total Activation Memory: 19456002
+[09/22/2025-01:28:28] [TRT] [I] [MemUsageChange] Init cuBLAS/cuBLASLt: CPU +1, GPU +19, now: CPU 2007, GPU 3824 (MiB)
+[09/22/2025-01:28:28] [TRT] [I] [MemUsageChange] Init cuDNN: CPU +0, GPU -11, now: CPU 2007, GPU 3813 (MiB)
+[09/22/2025-01:28:29] [TRT] [I] [MemUsageChange] TensorRT-managed allocation in building engine: CPU +0, GPU +16, now: CPU 0, GPU 16 (MiB)
+TensorRT: export success ✅ 215.3s, saved as 'yolo11n.engine' (16.3 MB)
+
+Export complete (228.4s)
+Results saved to /workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_single_module_experiment/1_Jetson_YOLO/1_preparation
+Predict:         yolo predict task=detect model=yolo11n.engine imgsz=640  
+Validate:        yolo val task=detect model=yolo11n.engine imgsz=640 data=/usr/src/ultralytics/ultralytics/cfg/datasets/coco.yaml  
+Visualize:       https://netron.app
+WARNING ⚠️ Unable to automatically guess model task, assuming 'task=detect'. Explicitly define task for your model, i.e. 
+'task=detect', 'segment', 'classify','pose' or 'obb'.
+Loading yolo11n.engine for TensorRT inference...
+requirements: Ultralytics requirement ['numpy==1.23.5'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: [Errno 12] Cannot allocate memory
+WARNING ⚠️ Retry 2/2 failed: [Errno 12] Cannot allocate memory
+WARNING ⚠️ requirements: ❌ [Errno 12] Cannot allocate memory
+[09/22/2025-01:28:31] [TRT] [I] The logger passed into createInferRuntime differs from one already provided for an existing builder, runtime, or refitter. Uses of the global logger, returned by nvinfer1::getLogger(), will return the existing 
+value.
+
+[09/22/2025-01:28:31] [TRT] [I] [MemUsageChange] Init CUDA: CPU +0, GPU +0, now: CPU 2007, GPU 3827 (MiB)
+[09/22/2025-01:28:31] [TRT] [I] Loaded engine size: 16 MiB
+[09/22/2025-01:28:32] [TRT] [I] [MemUsageChange] Init cuBLAS/cuBLASLt: CPU +1, GPU +0, now: CPU 2016, GPU 3844 (MiB)
+[09/22/2025-01:28:32] [TRT] [I] [MemUsageChange] Init cuDNN: CPU +0, GPU +1, now: CPU 2016, GPU 3845 (MiB)
+[09/22/2025-01:28:32] [TRT] [I] [MemUsageChange] TensorRT-managed allocation in engine deserialization: CPU +0, GPU +14, 
+now: CPU 0, GPU 14 (MiB)
+[09/22/2025-01:28:32] [TRT] [I] [MemUsageChange] Init cuBLAS/cuBLASLt: CPU +0, GPU +0, now: CPU 2032, GPU 3845 (MiB)     
+[09/22/2025-01:28:32] [TRT] [I] [MemUsageChange] Init cuDNN: CPU +0, GPU +0, now: CPU 2032, GPU 3845 (MiB)
+[09/22/2025-01:28:32] [TRT] [I] [MemUsageChange] TensorRT-managed allocation in IExecutionContext creation: CPU +0, GPU +33, now: CPU 0, GPU 47 (MiB)
+
+Downloading https://ultralytics.com/images/bus.jpg to 'bus.jpg': 100% ━━━━━━━━━━━━ 134.2KB 9.6MB/s 0.0s
+image 1/1 /workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_single_module_experiment/1_Jetson_YOLO/1_preparation/bus.jpg: 640x640 4 persons, 1 bus, 78.2ms
+Speed: 194.1ms preprocess, 78.2ms inference, 229.4ms postprocess per image at shape (1, 3, 640, 640)
+root@4d964ff22ba6:/workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_single_module_experiment/1_Jetson_YOLO/1_preparation# 
+```
+
+## 20. 결과 파일 안 나옴, 수동 탐지 명렁어 실행
+```bash
+yolo predict task=detect model=yolo11n.engine imgsz=640 source=bus.jpg save=True save_dir=results
+```
+
+**출력 결과: 오류 발생**
+```bash
+root@4d964ff22ba6:/workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_single_module_experiment/1_Jetson_YOLO/1_preparation# yolo predict task=detect model=yolo11n.engine imgsz=640 source=bus.jpg save=True save_dir=results
+Traceback (most recent call last):
+  File "/usr/local/bin/yolo", line 10, in <module>
+    sys.exit(entrypoint())
+  File "/ultralytics/ultralytics/cfg/__init__.py", line 914, in entrypoint
+    check_dict_alignment(full_args_dict, overrides)
+  File "/ultralytics/ultralytics/cfg/__init__.py", line 502, in check_dict_alignment
+    raise SyntaxError(string + CLI_HELP_MSG) from e
+SyntaxError: 'save_dir' is not a valid YOLO argument. Similar arguments are i.e. ['save_crop=False', 'save=True', 'save_period=-1'].
+
+    Arguments received: ['yolo', 'predict', 'task=detect', 'model=yolo11n.engine', 'imgsz=640', 'source=bus.jpg', 'save=True', 'save_dir=results']. Ultralytics 'yolo' commands use the following syntax:
+
+        yolo TASK MODE ARGS
+
+        Where   TASK (optional) is one of ['obb', 'segment', 'pose', 'detect', 'classify']
+                MODE (required) is one of ['val', 'predict', 'benchmark', 'track', 'train', 'export']
+                ARGS (optional) are any number of custom 'arg=value' pairs like 'imgsz=320' that override defaults.      
+                    See all ARGS at https://docs.ultralytics.com/usage/cfg or with 'yolo cfg'
+
+    1. Train a detection model for 10 epochs with an initial learning_rate of 0.01
+        yolo train data=coco8.yaml model=yolo11n.pt epochs=10 lr0=0.01
+
+    2. Predict a YouTube video using a pretrained segmentation model at image size 320:
+        yolo predict model=yolo11n-seg.pt source='https://youtu.be/LNwODJXcvt4' imgsz=320
+
+    3. Val a pretrained detection model at batch-size 1 and image size 640:
+        yolo val model=yolo11n.pt data=coco8.yaml batch=1 imgsz=640
+
+    4. Export a YOLO11n classification model to ONNX format at image size 224 by 128 (no TASK required)
+        yolo export model=yolo11n-cls.pt format=onnx imgsz=224,128
+
+    5. Ultralytics solutions usage
+        yolo solutions count or in ['crop', 'blur', 'workout', 'heatmap', 'isegment', 'visioneye', 'speed', 'queue', 'analytics', 'inference', 'trackzone'] source="path/to/video.mp4"
+
+    6. Run special commands:
+        yolo help
+        yolo checks
+        yolo version
+        yolo settings
+        yolo copy-cfg
+        yolo cfg
+        yolo solutions help
+
+    Docs: https://docs.ultralytics.com
+    Solutions: https://docs.ultralytics.com/solutions/
+    Community: https://community.ultralytics.com
+    GitHub: https://github.com/ultralytics/ultralytics
+
+root@4d964ff22ba6:/workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_single_module_experiment/1_Jetson_YOLO/1_preparation#
+```
+
+## 21. save_dir 인자 생략 후 실행
+```bash
+yolo predict task=detect model=yolo11n.engine source=bus.jpg imgsz=640 save=True 
+```
+
+**출력 결과**
+```bash
+root@4d964ff22ba6:/workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_single_module_experiment/1_Jetson_YOLO/1_preparation# yolo predict task=detect model=yolo11n.engine source=bus.jpg imgsz=640 save=True  
+Ultralytics 8.3.202 🚀 Python-3.8.0 torch-1.11.0a0+gitbc2c6ed CUDA:0 (NVIDIA Tegra X1, 3964MiB)
+Loading yolo11n.engine for TensorRT inference...
+requirements: Ultralytics requirement ['numpy==1.23.5'] not found, attempting AutoUpdate...
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.Collecting numpy==1.23.5
+  Downloading numpy-1.23.5-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl.metadata (2.3 kB)
+Downloading numpy-1.23.5-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (14.0 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 14.0/14.0 MB 40.1 MB/s eta 0:00:00
+Installing collected packages: numpy
+  Attempting uninstall: numpy
+    Found existing installation: numpy 1.24.4
+    Uninstalling numpy-1.24.4:
+      Successfully uninstalled numpy-1.24.4
+Successfully installed numpy-1.23.5
+
+requirements: AutoUpdate success ✅ 12.4s
+WARNING ⚠️ requirements: Restart runtime or rerun command for updates to take effect
+
+[09/22/2025-01:41:46] [TRT] [I] [MemUsageChange] Init CUDA: CPU +230, GPU +0, now: CPU 294, GPU 2757 (MiB)
+[09/22/2025-01:41:46] [TRT] [I] Loaded engine size: 16 MiB
+[09/22/2025-01:41:49] [TRT] [I] [MemUsageChange] Init cuBLAS/cuBLASLt: CPU +158, GPU +250, now: CPU 476, GPU 3045 (MiB)
+[09/22/2025-01:41:52] [TRT] [I] [MemUsageChange] Init cuDNN: CPU +241, GPU +344, now: CPU 717, GPU 3389 (MiB)
+[09/22/2025-01:41:52] [TRT] [I] [MemUsageChange] TensorRT-managed allocation in engine deserialization: CPU +0, GPU +14, 
+now: CPU 0, GPU 14 (MiB)
+[09/22/2025-01:41:52] [TRT] [I] [MemUsageChange] Init cuBLAS/cuBLASLt: CPU +0, GPU +0, now: CPU 700, GPU 3373 (MiB)
+[09/22/2025-01:41:52] [TRT] [I] [MemUsageChange] Init cuDNN: CPU +1, GPU +1, now: CPU 701, GPU 3374 (MiB)
+[09/22/2025-01:41:52] [TRT] [I] [MemUsageChange] TensorRT-managed allocation in IExecutionContext creation: CPU +0, GPU +33, now: CPU 0, GPU 47 (MiB)
+/usr/local/lib/python3.8/dist-packages/tensorrt/__init__.py:165: FutureWarning: In the future `np.bool` will be defined as the corresponding NumPy scalar.
+  bool: np.bool,
+Traceback (most recent call last):
+  File "/usr/local/bin/yolo", line 10, in <module>
+    sys.exit(entrypoint())
+  File "/ultralytics/ultralytics/cfg/__init__.py", line 990, in entrypoint
+    getattr(model, mode)(**overrides)  # default args from model
+  File "/ultralytics/ultralytics/engine/model.py", line 550, in predict
+    self.predictor.setup_model(model=self.model, verbose=is_cli)
+  File "/ultralytics/ultralytics/engine/predictor.py", line 397, in setup_model
+    self.model = AutoBackend(
+  File "/usr/local/lib/python3.8/dist-packages/torch/autograd/grad_mode.py", line 27, in decorate_context
+    return func(*args, **kwargs)
+  File "/ultralytics/ultralytics/nn/autobackend.py", line 387, in __init__
+    dtype = trt.nptype(model.get_binding_dtype(i))
+  File "/usr/local/lib/python3.8/dist-packages/tensorrt/__init__.py", line 165, in nptype
+    bool: np.bool,
+  File "/usr/local/lib/python3.8/dist-packages/numpy/__init__.py", line 305, in __getattr__
+    import numpy.testing as testing
+AttributeError: module 'numpy' has no attribute 'bool'.
+`np.bool` was a deprecated alias for the builtin `bool`. To avoid this error in existing code, use `bool` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.bool_` here.  
+The aliases was originally deprecated in NumPy 1.20; for more details and guidance see the original release note at:     
+    https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
+    dtype = trt.nptype(model.get_binding_dtype(i))
+  File "/usr/local/lib/python3.8/dist-packages/tensorrt/__init__.py", line 165, in nptype
+    bool: np.bool,
+  File "/usr/local/lib/python3.8/dist-packages/numpy/__init__.py", line 305, in __getattr__
+    import numpy.testing as testing
+AttributeError: module 'numpy' has no attribute 'bool'.
+`np.bool` was a deprecated alias for the builtin `bool`. To avoid this error in existing code, use `bool` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.bool_` here.  
+The aliases was originally deprecated in NumPy 1.20; for more details and guidance see the original release note at:     
+    https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
+  File "/usr/local/lib/python3.8/dist-packages/tensorrt/__init__.py", line 165, in nptype
+    bool: np.bool,
+  File "/usr/local/lib/python3.8/dist-packages/numpy/__init__.py", line 305, in __getattr__
+    import numpy.testing as testing
+AttributeError: module 'numpy' has no attribute 'bool'.
+`np.bool` was a deprecated alias for the builtin `bool`. To avoid this error in existing code, use `bool` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.bool_` here.  
+The aliases was originally deprecated in NumPy 1.20; for more details and guidance see the original release note at:     
+    https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
+root@4d964ff22ba6:/workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_single_module_experiment/1_Jetson_YOLO/1_prroot@4d964ff22ba6:/workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_single_module_experiment/1_Jetson_YOLO/1_pr    import numpy.testing as testing
+AttributeError: module 'numpy' has no attribute 'bool'.
+`np.bool` was a deprecated alias for the builtin `bool`. To avoid this error in existing code, use `bool` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.bool_` here.  
+The aliases was originally deprecated in NumPy 1.20; for more details and guidance see the original release note at:     
+    https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
+root@4d964ff22ba6:/workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_single_module_experiment/1_Jetson_YOLO/1_prg this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.bool_` here.  
+The aliases was originally deprecated in NumPy 1.20; for more details and guidance see the original release note at:     
+    https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
+root@4d964ff22ba6:/workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_single_module_experiment/1_Jetson_YOLO/1_prroot@4d964ff22ba6:/workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_single_module_experiment/1_Jetson_YOLO/1_preparation#
+```
+
+## 22. 출력 결과 재 확인: 코드 실행 전 후 주요 라이브러리 셋에 변경 사항이 있는지 체크하기 위함
+- 주요 라이브러리 변경 사항 없음
+```bash
+root@4d964ff22ba6:/workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_single_module_experiment/1_Jetson_YOLO/1_preparation# python3 -c "import numpy; print(numpy.__version__)"
+1.23.5
+root@4d964ff22ba6:/workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_single_module_experiment/1_Jetson_YOLO/1_preparation# python3 -c "import torch; print(torch.__version__)"
+1.11.0a0+gitbc2c6ed
+root@4d964ff22ba6:/workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_single_module_experiment/1_Jetson_YOLO/1_preparation#  python3 -c "import tensorrt; print(tensorrt.__version__)"
+8.2.0.6
+root@4d964ff22ba6:/workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_single_module_experiment/1_Jetson_YOLO/1_preparation# python3 -c "import ultralytics; print(ultralytics.__version__)"
+8.3.202
+```
+
+**정리**
+numpy 1.23.5
+torch 1.11.0a0+gitbc2c6ed
+tensorrt 8.2.0.6
+ultralytics 8.3.202
+
+## 23. numpy 1.23.5 버전에서 np.bool 관련 AttributeError 발생 -> numpy 1.21.6 버전으로 다운그레이드 후 재 시도
+```bash
+pip3 uninstall numpy -y
+pip3 install numpy==1.21.6
+```
+
+**출력 결과: ultralytics 8.3.202 버전에서 넘파이 1.23.0 이상 요구**
+```bash
+root@4d964ff22ba6:/workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_single_module_experiment/1_Jetson_YOLO/1_preparation# pip3 install numpy==1.21.6
+Collecting numpy==1.21.6
+  Downloading numpy-1.21.6-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl.metadata (2.1 kB)
+Downloading numpy-1.21.6-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (13.0 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 13.0/13.0 MB 8.6 MB/s eta 0:00:00
+Installing collected packages: numpy
+ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+ultralytics 8.3.202 requires numpy>=1.23.0, but you have numpy 1.21.6 which is incompatible.
+Successfully installed numpy-1.21.6
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.root@4d964ff22ba6:/workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_single_module_experiment/1_Jetson_YOLO/1_preparation#
+```
+
+## 24. 재시도
+```bash
+yolo predict task=detect model=yolo11n.engine source=bus.jpg imgsz=640 save=True 
+```
+
+**출력 결과: 동일한 오류 발생**
+```bash
+root@4d964ff22ba6:/workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_single_module_experiment/1_Jetson_YOLO/1_preparation# yolo predict task=detect model=yolo11n.engine source=bus.jpg imgsz=640 save=True 
+/usr/local/lib/python3.8/dist-packages/torch/_masked/__init__.py:223: UserWarning: Failed to initialize NumPy: module compiled against API version 0x10 but this version of numpy is 0xe (Triggered internally at  /pytorch/torch/csrc/utils/tensor_numpy.cpp:68.)
+  example_input = torch.tensor([[-3, -2, -1], [0, 1, 2]])
+Ultralytics 8.3.202 🚀 Python-3.8.0 torch-1.11.0a0+gitbc2c6ed CUDA:0 (NVIDIA Tegra X1, 3964MiB)
+Loading yolo11n.engine for TensorRT inference...
+requirements: Ultralytics requirement ['numpy==1.23.5'] not found, attempting AutoUpdate...
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.Collecting numpy==1.23.5
+  Downloading numpy-1.23.5-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl.metadata (2.3 kB)
+Downloading numpy-1.23.5-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (14.0 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 14.0/14.0 MB 35.9 MB/s eta 0:00:00
+Installing collected packages: numpy
+  Attempting uninstall: numpy
+    Found existing installation: numpy 1.21.6
+    Uninstalling numpy-1.21.6:
+      Successfully uninstalled numpy-1.21.6
+Successfully installed numpy-1.23.5
+
+requirements: AutoUpdate success ✅ 10.7s
+WARNING ⚠️ requirements: Restart runtime or rerun command for updates to take effect
+
+[09/22/2025-01:52:27] [TRT] [I] [MemUsageChange] Init CUDA: CPU +229, GPU +0, now: CPU 298, GPU 3033 (MiB)
+[09/22/2025-01:52:27] [TRT] [I] Loaded engine size: 16 MiB
+[09/22/2025-01:52:29] [TRT] [I] [MemUsageChange] Init cuBLAS/cuBLASLt: CPU +158, GPU +158, now: CPU 481, GPU 3215 (MiB)
+[09/22/2025-01:52:31] [TRT] [I] [MemUsageChange] Init cuDNN: CPU +240, GPU +243, now: CPU 721, GPU 3458 (MiB)
+[09/22/2025-01:52:31] [TRT] [I] [MemUsageChange] TensorRT-managed allocation in engine deserialization: CPU +0, GPU +14, 
+now: CPU 0, GPU 14 (MiB)
+[09/22/2025-01:52:31] [TRT] [I] [MemUsageChange] Init cuBLAS/cuBLASLt: CPU +0, GPU +0, now: CPU 705, GPU 3442 (MiB)
+[09/22/2025-01:52:31] [TRT] [I] [MemUsageChange] Init cuDNN: CPU +0, GPU +0, now: CPU 705, GPU 3442 (MiB)
+[09/22/2025-01:52:31] [TRT] [I] [MemUsageChange] TensorRT-managed allocation in IExecutionContext creation: CPU +0, GPU +33, now: CPU 0, GPU 47 (MiB)
+Traceback (most recent call last):
+  File "/usr/local/bin/yolo", line 10, in <module>
+    sys.exit(entrypoint())
+  File "/ultralytics/ultralytics/cfg/__init__.py", line 990, in entrypoint
+    getattr(model, mode)(**overrides)  # default args from model
+  File "/ultralytics/ultralytics/engine/model.py", line 550, in predict
+    self.predictor.setup_model(model=self.model, verbose=is_cli)
+  File "/ultralytics/ultralytics/engine/predictor.py", line 397, in setup_model
+    self.model = AutoBackend(
+  File "/usr/local/lib/python3.8/dist-packages/torch/autograd/grad_mode.py", line 27, in decorate_context
+    return func(*args, **kwargs)
+  File "/ultralytics/ultralytics/nn/autobackend.py", line 398, in __init__
+    im = torch.from_numpy(np.empty(shape, dtype=dtype)).to(device)
+**RuntimeError: Numpy is not available**
+root@4d964ff22ba6:/workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_single_module_experiment/1_Jetson_YOLO/1_preparation#
+```
+- **RuntimeError: Numpy is not available** 오류 발생
+
+## 25. 출력 결과 재 확인: 코드 실행 전 후 주요 라이브러리 셋에 변경 사항이 있는지 체크하기 위함
+- 주요 라이브러리 변경 사항 없음
+```bash
+root@4d964ff22ba6:/workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_single_module_experiment/1_Jetson_YOLO/1_preparation# python3 -c "import numpy; print(numpy.__version__)"
+1.23.5
+root@4d964ff22ba6:/workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_single_module_experiment/1_Jetson_YOLO/1_preparation# python3 -c "import torch; print(torch.__version__)"
+1.11.0a0+gitbc2c6ed
+root@4d964ff22ba6:/workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_single_module_experiment/1_Jetson_YOLO/1_preparation# python3 -c "import tensorrt; print(tensorrt.__version__)"
+8.2.0.6
+root@4d964ff22ba6:/workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_single_module_experiment/1_Jetson_YOLO/1_preparation# python3 -c "import ultralytics; print(ultralytics.__version__)"
+8.3.202
+root@4d964ff22ba6:/workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_single_module_experiment/1_Jetson_YOLO/1_preparation#
+```
+
+**정리**
+numpy 1.23.5
+torch 1.11.0a0+gitbc2c6ed
+tensorrt 8.2.0.6
+ultralytics 8.3.202
+
+## 26. 기존 모델 내용 삭제 후 모델 재 생성 시도
+```bash
+root@4d964ff22ba6:/workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_single_module_experiment/1_Jetson_YOLO/1_preparation# dir -a
+.                                                4_activate_power_clock_option_jetson.md       test2_yolo11n_tensorRT.py
+..                                               5_install_NVIDIA_stats_application_jetson.md  test_yolo11n_tensorRT.py  
+1_jetson_nano_ultralytics_yolo11_quick_start.md  6_test_TensorRT_YOLO11n_jetson.md             yolo11n.engine
+2_install_docker_jetson.md                       7_reinstall_container_jetson.md               yolo11n.onnx
+3_download_ultralystics_docker_image_jetson.md   bus.jpg                                       yolo11n.pt
+```
+
+이 중
+yolo11n.engine
+yolo11n.onnx
+yolo11n.pt
+bus.jpg
+을 제거
+
+```bash
+rm yolo11n.engine yolo11n.onnx yolo11n.pt bus.jpg
+```
+
+## 27. 모델 재 생성 시도
+```bash
+python3 test2_yolo11n_tensorRT.py
+```
+**출력 결과**
+```bash
+root@4d964ff22ba6:/workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_single_module_experiment/1_Jetson_YOLO/1_preparation# python3 test2_yolo11n_tensorRT.py 
+test2_yolo11n_tensorRT.py:2: DeprecationWarning: `np.bool` is a deprecated alias for the builtin `bool`. To silence this 
+warning, use `bool` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy 
+scalar type, use `np.bool_` here.
+Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations  if not hasattr(np, 'bool'):
+Downloading https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.pt to 'yolo11n.pt': 67% ━━━━━━━━──── 3Downloading https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.pt to 'yolo11n.pt': 100% ━━━━━━━━━━━━ 
+Downloading https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.pt to 'yolo11n.pt': 100% ━━━━━━━━━━━━ 
+5.4MB 38.6MB/s 0.1s
+WARNING ⚠️ TensorRT requires GPU export, automatically assigning device=0
+Ultralytics 8.3.202 🚀 Python-3.8.0 torch-1.11.0a0+gitbc2c6ed CUDA:0 (NVIDIA Tegra X1, 3964MiB)
+YOLO11n summary (fused): 100 layers, 2,616,248 parameters, 0 gradients, 6.5 GFLOPs
+
+PyTorch: starting from 'yolo11n.pt' with input shape (1, 3, 640, 640) BCHW and output shape(s) (1, 84, 8400) (5.4 MB)    
+
+ONNX: starting export with onnx 1.12.0 opset 14...
+WARNING: The shape inference of prim::Constant type is missing, so it may result in wrong shape inference for the exported graph. Please consider adding it in symbolic function.
+WARNING: The shape inference of prim::Constant type is missing, so it may result in wrong shape inference for the exported graph. Please consider adding it in symbolic function.
+WARNING: The shape inference of prim::Constant type is missing, so it may result in wrong shape inference for the exported graph. Please consider adding it in symbolic function.
+WARNING: The shape inference of prim::Constant type is missing, so it may result in wrong shape inference for the exported graph. Please consider adding it in symbolic function.
+WARNING: The shape inference of prim::Constant type is missing, so it may result in wrong shape inference for the exported graph. Please consider adding it in symbolic function.
+WARNING: The shape inference of prim::Constant type is missing, so it may result in wrong shape inference for the exported graph. Please consider adding it in symbolic function.
+WARNING ⚠️ ONNX: simplifier failure: FLOAT8E4M3FN
+ONNX: export success ✅ 14.8s, saved as 'yolo11n.onnx' (10.2 MB)
+
+TensorRT: starting export with TensorRT 8.2.0.6...
+[09/22/2025-02:02:39] [TRT] [I] [MemUsageChange] Init CUDA: CPU +210, GPU +0, now: CPU 1465, GPU 3898 (MiB)
+[09/22/2025-02:02:39] [TRT] [I] [MemUsageSnapshot] Begin constructing builder kernel library: CPU 1465 MiB, GPU 3895 MiB
+[09/22/2025-02:02:39] [TRT] [I] [MemUsageSnapshot] End constructing builder kernel library: CPU 1494 MiB, GPU 3902 MiB
+[09/22/2025-02:02:39] [TRT] [I] ----------------------------------------------------------------
+[09/22/2025-02:02:39] [TRT] [I] Input filename:   yolo11n.onnx
+[09/22/2025-02:02:39] [TRT] [I] ONNX IR version:  0.0.7
+[09/22/2025-02:02:39] [TRT] [I] Opset version:    14
+[09/22/2025-02:02:39] [TRT] [I] Producer name:    pytorch
+[09/22/2025-02:02:39] [TRT] [I] Producer version: 1.11.0
+[09/22/2025-02:02:39] [TRT] [I] Domain:
+[09/22/2025-02:02:39] [TRT] [I] Model version:    0
+[09/22/2025-02:02:39] [TRT] [I] Doc string:
+[09/22/2025-02:02:39] [TRT] [I] ----------------------------------------------------------------
+[09/22/2025-02:02:39] [TRT] [W] onnx2trt_utils.cpp:366: Your ONNX model has been generated with INT64 weights, while TensorRT does not natively support INT64. Attempting to cast down to INT32.
+TensorRT: input "images" with shape(1, 3, 640, 640) DataType.FLOAT
+TensorRT: output "output0" with shape(1, 84, 8400) DataType.FLOAT
+TensorRT: building FP32 engine as yolo11n.engine
+[09/22/2025-02:02:40] [TRT] [I] ---------- Layers Running on DLA ----------
+[09/22/2025-02:02:40] [TRT] [I] ---------- Layers Running on GPU ----------
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_0
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_1), Mul_2)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_3
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_4), Mul_5)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_6
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_7), Mul_8)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Split_10
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Split_10_0
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_11
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_12), Mul_13)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_14
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(PWN(Sigmoid_15), Mul_16), Add_17)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] input.12 copy
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_19
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_20), Mul_21)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_22
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_23), Mul_24)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_25
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_26), Mul_27)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_30
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_31), Mul_32)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_33
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(PWN(Sigmoid_34), Mul_35), Add_36)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] onnx::Concat_206 copy
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] input.40 copy
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_38
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_39), Mul_40)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_41
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_42), Mul_43)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_44
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_45), Mul_46)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_49 || Conv_66
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_50), Mul_51)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_67), Mul_68)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_52
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_53), Mul_54)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_55
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(PWN(Sigmoid_56), Mul_57), Add_58)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_59
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_60), Mul_61)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_62
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(PWN(Sigmoid_63), Mul_64), Add_65)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_70
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_71), Mul_72)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] onnx::Concat_226 copy
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] input.68 copy
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_74
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_75), Mul_76)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_77
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_78), Mul_79)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_80
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_81), Mul_82)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_85 || Conv_102
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_86), Mul_87)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_103), Mul_104)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_88
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_89), Mul_90)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_91
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(PWN(Sigmoid_92), Mul_93), Add_94)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_95
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_96), Mul_97)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_98
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(PWN(Sigmoid_99), Mul_100), Add_101)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_106
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_107), Mul_108)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] onnx::Concat_263 copy
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] input.124 copy
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_110
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_111), Mul_112)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_113
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_114), Mul_115)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] MaxPool_116
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] MaxPool_117
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] MaxPool_118
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] onnx::MaxPool_295 copy
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] onnx::MaxPool_296 copy
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] onnx::MaxPool_297 copy
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] onnx::Concat_298 copy
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_120
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_121), Mul_122)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_123
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_124), Mul_125)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Split_127_4
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_128
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Reshape_129
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Split_131
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Split_131_5
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Split_131_6
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Reshape_140
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] MatMul_133
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] onnx::Mul_333 + (Unnamed Layer* 136) [Shuffle] + Mul_135
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Softmax_136
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] MatMul_138
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Reshape_139
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_141 + Add_142
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_143 + Add_144
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_145
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_146), Mul_147)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_148 + Add_149
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] onnx::Concat_307 copy
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] onnx::Concat_366 copy
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_151
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_152), Mul_153)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Resize_154
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] onnx::Concat_375 copy
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_156
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_157), Mul_158)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_161
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_162), Mul_163)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_164
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(PWN(Sigmoid_165), Mul_166), Add_167)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] onnx::Concat_381 copy
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] input.224 copy
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_169
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_170), Mul_171)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Resize_172
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] onnx::Concat_398 copy
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_174
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_175), Mul_176)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_179
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_180), Mul_181)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_182
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(PWN(Sigmoid_183), Mul_184), Add_185)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] onnx::Concat_404 copy
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] input.252 copy
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_187
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_188), Mul_189)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_190
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_247
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_254
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_191), Mul_192)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_248), Mul_249)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_255), Mul_256)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] onnx::Resize_393 copy
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_250
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_257
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_194
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_251), Mul_252)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_258), Mul_259)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_195), Mul_196)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_253
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_260
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_199
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_261), Mul_262)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_263
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_200), Mul_201)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_202
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_264), Mul_265)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_266
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(PWN(Sigmoid_203), Mul_204), Add_205)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] onnx::Concat_425 copy
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] input.284 copy
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_207
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_208), Mul_209)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Reshape_316
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_210
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_268
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_275
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_211), Mul_212)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_269), Mul_270)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_276), Mul_277)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] onnx::Resize_370 copy
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_271
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_278
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_214
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_272), Mul_273)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_279), Mul_280)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_215), Mul_216)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_274
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_281
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_219 || Conv_236
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_282), Mul_283)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_284
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_220), Mul_221)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_237), Mul_238)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_222
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_285), Mul_286)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_287
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_223), Mul_224)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_225
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Reshape_320
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(PWN(Sigmoid_226), Mul_227), Add_228)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_229
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_230), Mul_231)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_232
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(PWN(Sigmoid_233), Mul_234), Add_235)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_240
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_241), Mul_242)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] onnx::Concat_446 copy
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] input.316 copy
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_244
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_245), Mul_246)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_289
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_296
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_290), Mul_291)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_297), Mul_298)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_292
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_299
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_293), Mul_294)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_300), Mul_301)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_295
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_302
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_303), Mul_304)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_305
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(PWN(Sigmoid_306), Mul_307)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_308
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Reshape_324
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] onnx::Concat_551 copy
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] onnx::Concat_561 copy
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] onnx::Concat_571 copy
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Split_327
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Split_327_11
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Reshape_339 + Transpose_340
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Softmax_341
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Conv_342
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Reshape_348
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Slice_359
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Slice_362
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] onnx::Sub_620
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Sub_364
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] onnx::Add_622
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Add_366
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(onnx::Div_625 + (Unnamed Layer* 413) [Shuffle], PWN(Add_367, Div_369))    
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Sub_370
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] onnx::Concat_626 copy
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] onnx::Concat_627 copy
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] onnx::Mul_629 + (Unnamed Layer* 418) [Shuffle]
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] onnx::Concat_627 copy
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] onnx::Concat_627 copy
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] onnx::Mul_629 + (Unnamed Layer* 418) [Shuffle]
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] onnx::Concat_627 copy
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] onnx::Mul_629 + (Unnamed Layer* 418) [Shuffle]
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] onnx::Concat_627 copy
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] onnx::Concat_627 copy
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] onnx::Mul_629 + (Unnamed Layer* 418) [Shuffle]
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] Mul_373
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] PWN(Sigmoid_374)
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] onnx::Concat_630 copy
+[09/22/2025-02:02:40] [TRT] [I] [GpuLayer] onnx::Concat_631 copy
+[09/22/2025-02:02:40] [TRT] [I] [MemUsageChange] Init cuBLAS/cuBLASLt: CPU +0, GPU +0, now: CPU 1507, GPU 3874 (MiB)     
+[09/22/2025-02:02:44] [TRT] [I] [MemUsageChange] Init cuDNN: CPU +241, GPU +12, now: CPU 1748, GPU 3886 (MiB)
+[09/22/2025-02:02:44] [TRT] [I] Local timing cache in use. Profiling results in this builder pass will not be stored.    
+[09/22/2025-02:03:06] [TRT] [I] Some tactics do not have sufficient workspace memory to run. Increasing workspace size may increase performance, please check verbose output.
+[09/22/2025-02:05:48] [TRT] [I] Detected 1 inputs and 3 output network tensors.
+[09/22/2025-02:05:49] [TRT] [I] Total Host Persistent Memory: 194672    
+[09/22/2025-02:05:49] [TRT] [I] Total Device Persistent Memory: 14257664
+[09/22/2025-02:05:49] [TRT] [I] Total Scratch Memory: 0
+[09/22/2025-02:05:49] [TRT] [I] [MemUsageStats] Peak memory usage of TRT CPU/GPU memory allocators: CPU 2 MiB, GPU 171 MiB
+[09/22/2025-02:05:49] [TRT] [I] [BlockAssignment] Algorithm ShiftNTopDown took 191.111ms to assign 10 blocks to 195 nodes requiring 19456002 bytes.
+[09/22/2025-02:05:49] [TRT] [I] Total Activation Memory: 19456002
+[09/22/2025-02:05:49] [TRT] [I] [MemUsageChange] Init cuBLAS/cuBLASLt: CPU +0, GPU -3, now: CPU 2006, GPU 3893 (MiB)
+[09/22/2025-02:05:50] [TRT] [I] [MemUsageChange] Init cuDNN: CPU +1, GPU -11, now: CPU 2007, GPU 3882 (MiB)
+[09/22/2025-02:05:50] [TRT] [I] [MemUsageChange] TensorRT-managed allocation in building engine: CPU +0, GPU +16, now: CPU 0, GPU 16 (MiB)
+TensorRT: export success ✅ 208.4s, saved as 'yolo11n.engine' (16.3 MB)
+
+Export complete (219.7s)
+Results saved to /workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_single_module_experiment/1_Jetson_YOLO/1_preparation
+Predict:         yolo predict task=detect model=yolo11n.engine imgsz=640  
+Validate:        yolo val task=detect model=yolo11n.engine imgsz=640 data=/usr/src/ultralytics/ultralytics/cfg/datasets/coco.yaml  
+Visualize:       https://netron.app
+WARNING ⚠️ Unable to automatically guess model task, assuming 'task=detect'. Explicitly define task for your model, i.e. 
+'task=detect', 'segment', 'classify','pose' or 'obb'.
+# 모델 로딩
+Loading yolo11n.engine for TensorRT inference...
+[09/22/2025-02:05:50] [TRT] [I] The logger passed into createInferRuntime differs from one already provided for an existing builder, runtime, or refitter. Uses of the global logger, returned by nvinfer1::getLogger(), will return the existing 
+value.
+# TensorRT 초기화
+[09/22/2025-02:05:50] [TRT] [I] [MemUsageChange] Init CUDA: CPU +0, GPU +0, now: CPU 2008, GPU 3893 (MiB) # CUDA 초기화
+[09/22/2025-02:05:50] [TRT] [I] Loaded engine size: 16 MiB # 로드된 모델 사이즈: 16MiB
+[09/22/2025-02:05:50] [TRT] [I] [MemUsageChange] Init cuBLAS/cuBLASLt: CPU +0, GPU +0, now: CPU 2016, GPU 3897 (MiB) # cuBLAS 초기화
+[09/22/2025-02:05:50] [TRT] [I] [MemUsageChange] Init cuDNN: CPU +0, GPU +0, now: CPU 2016, GPU 3897 (MiB) # cuDNN 초기화
+[09/22/2025-02:05:50] [TRT] [I] [MemUsageChange] TensorRT-managed allocation in engine deserialization: CPU +0, GPU +14, 
+now: CPU 0, GPU 14 (MiB) # TensorRT에서 엔진을 실행하기 위한 컨텍스트 생성
+[09/22/2025-02:05:50] [TRT] [I] [MemUsageChange] Init cuBLAS/cuBLASLt: CPU +0, GPU +0, now: CPU 2032, GPU 3897 (MiB)     
+[09/22/2025-02:05:50] [TRT] [I] [MemUsageChange] Init cuDNN: CPU +0, GPU +0, now: CPU 2032, GPU 3897 (MiB)
+[09/22/2025-02:05:50] [TRT] [I] [MemUsageChange] TensorRT-managed allocation in IExecutionContext creation: CPU +0, GPU +33, now: CPU 0, GPU 47 (MiB)
+
+# 이미지 다운로드
+Downloading https://ultralytics.com/images/bus.jpg to 'bus.jpg': 100% ━━━━━━━━━━━━ 134.2KB 4.2MB/s 0.0s # bus.jpg 다운로드 완료
+# 추론 수행
+image 1/1 /workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_single_module_experiment/1_Jetson_YOLO/1_preparation/bus.jpg: 640x640 4 persons, 1 bus, 77.6ms # 탐지 결과 4명의 사람, 1대의 버스
+Speed: 206.8ms preprocess, 77.6ms inference, 272.1ms postprocess per image at shape (1, 3, 640, 640) # 640x640 이미지 1장에 대해 전처리 206.8ms, 추론 77.6ms, 후처리 272.1ms 소요
+root@4d964ff22ba6:/workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_single_module_experiment/1_Jetson_YOLO/1_preparation# 
+```
+**(!!!!!!!성공!!!!!!!)4명의 사람, 1대의 버스 탐지 완료**
+
+## 28. YOLO predict 명령을 이용해서 박스가 그려진 이미지를 생성
+```bash
+yolo predict task=detect model=yolo11n.engine source=bus.jpg imgsz=640 save=True
+```
+**출력 결과**
+```bash
+root@4d964ff22ba6:/workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_single_module_experiment/1_Jetson_YOLO/1_preparation# yolo predict task=detect model=yolo11n.engine source=bus.jpg imgsz=640 save=True
+Ultralytics 8.3.202 🚀 Python-3.8.0 torch-1.11.0a0+gitbc2c6ed CUDA:0 (NVIDIA Tegra X1, 3964MiB)
+Loading yolo11n.engine for TensorRT inference...
+[09/22/2025-02:14:08] [TRT] [I] [MemUsageChange] Init CUDA: CPU +230, GPU +0, now: CPU 294, GPU 2644 (MiB)
+[09/22/2025-02:14:08] [TRT] [I] Loaded engine size: 16 MiB
+[09/22/2025-02:14:11] [TRT] [I] [MemUsageChange] Init cuBLAS/cuBLASLt: CPU +158, GPU +247, now: CPU 476, GPU 2916 (MiB)
+[09/22/2025-02:14:14] [TRT] [I] [MemUsageChange] Init cuDNN: CPU +241, GPU +345, now: CPU 717, GPU 3261 (MiB)
+[09/22/2025-02:14:14] [TRT] [I] [MemUsageChange] TensorRT-managed allocation in engine deserialization: CPU +0, GPU +14, 
+now: CPU 0, GPU 14 (MiB)
+[09/22/2025-02:14:14] [TRT] [I] [MemUsageChange] Init cuBLAS/cuBLASLt: CPU +0, GPU +0, now: CPU 700, GPU 3244 (MiB)
+[09/22/2025-02:14:14] [TRT] [I] [MemUsageChange] Init cuDNN: CPU +1, GPU +0, now: CPU 701, GPU 3244 (MiB)
+[09/22/2025-02:14:15] [TRT] [I] [MemUsageChange] TensorRT-managed allocation in IExecutionContext creation: CPU +0, GPU +33, now: CPU 0, GPU 47 (MiB)
+
+image 1/1 /workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_single_module_experiment/1_Jetson_YOLO/1_preparation/bus.jpg: 640x640 4 persons, 1 bus, 244.5ms
+Speed: 583.6ms preprocess, 244.5ms inference, 406.7ms postprocess per image at shape (1, 3, 640, 640)
+Results saved to /ultralytics/runs/detect/predict
+💡 Learn more at https://docs.ultralytics.com/modes/predict
+root@4d964ff22ba6:/workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_single_module_experiment/1_Jetson_YOLO/1_preparation#
+```
+- 도커 내부에 탐지 결과가 저장되고 있음
+  
+## 29. 저장 경로 지정하여 탐지 수행
+```bash
+yolo predict task=detect model=yolo11n.engine source=bus.jpg imgsz=640 save=True save_dir=/workspace/output
+```
+
+**출력 결과**
+```bash
+root@4d964ff22ba6:/workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_single_module_experiment/1_Jetson_YOLO/1_preparation# yolo predict task=detect model=yolo11n.engine source=bus.jpg imgsz=640 save=True save_dir=/workspace/output   
+Traceback (most recent call last):
+  File "/usr/local/bin/yolo", line 10, in <module>
+    sys.exit(entrypoint())
+  File "/ultralytics/ultralytics/cfg/__init__.py", line 914, in entrypoint
+    check_dict_alignment(full_args_dict, overrides)
+  File "/ultralytics/ultralytics/cfg/__init__.py", line 502, in check_dict_alignment
+    raise SyntaxError(string + CLI_HELP_MSG) from e
+SyntaxError: 'save_dir' is not a valid YOLO argument. Similar arguments are i.e. ['save_crop=False', 'save=True', 'save_period=-1'].
+
+    Arguments received: ['yolo', 'predict', 'task=detect', 'model=yolo11n.engine', 'source=bus.jpg', 'imgsz=640', 'save=True', 'save_dir=/workspace/output']. Ultralytics 'yolo' commands use the following syntax:
+
+        yolo TASK MODE ARGS
+
+        Where   TASK (optional) is one of ['obb', 'classify', 'segment', 'detect', 'pose']
+                MODE (required) is one of ['val', 'track', 'export', 'predict', 'train', 'benchmark']
+                ARGS (optional) are any number of custom 'arg=value' pairs like 'imgsz=320' that override defaults.      
+                    See all ARGS at https://docs.ultralytics.com/usage/cfg or with 'yolo cfg'
+
+    1. Train a detection model for 10 epochs with an initial learning_rate of 0.01
+        yolo train data=coco8.yaml model=yolo11n.pt epochs=10 lr0=0.01
+
+    2. Predict a YouTube video using a pretrained segmentation model at image size 320:
+        yolo predict model=yolo11n-seg.pt source='https://youtu.be/LNwODJXcvt4' imgsz=320
+
+    3. Val a pretrained detection model at batch-size 1 and image size 640:
+        yolo val model=yolo11n.pt data=coco8.yaml batch=1 imgsz=640
+
+    4. Export a YOLO11n classification model to ONNX format at image size 224 by 128 (no TASK required)
+        yolo export model=yolo11n-cls.pt format=onnx imgsz=224,128
+
+    5. Ultralytics solutions usage
+        yolo solutions count or in ['crop', 'blur', 'workout', 'heatmap', 'isegment', 'visioneye', 'speed', 'queue', 'analytics', 'inference', 'trackzone'] source="path/to/video.mp4"
+
+    6. Run special commands:
+        yolo help
+        yolo checks
+        yolo version
+        yolo settings
+        yolo copy-cfg
+        yolo cfg
+        yolo solutions help
+
+    Docs: https://docs.ultralytics.com
+    Solutions: https://docs.ultralytics.com/solutions/
+    Community: https://community.ultralytics.com
+    GitHub: https://github.com/ultralytics/ultralytics
+
+root@4d964ff22ba6:/workspace/Desktop/ENVG_Jetson_Nano/1_project_preparation/2_single_module_experiment/1_Jetson_YOLO/1_preparation#
+```
+- `save_dir` 옵션이 지원되지 않음

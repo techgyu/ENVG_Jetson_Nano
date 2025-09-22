@@ -1,4 +1,4 @@
-# 2025-09-19 | Jetson Nano TensorRT 사용 실험
+# 2025-09-19 | Jetson Nano YOLO11n TensorRT 사용 실험 준비
 
 ---
 
