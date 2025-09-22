@@ -6,10 +6,10 @@ if not hasattr(np, 'bool'):
     np.bool = bool
 
 # 1. 모델 로드
-model = YOLO("./1_project_preparation/2_single_module_experiment/2_Jetson_Edge Detection/data/model/yolo11n.pt")
+model = YOLO("./data/model/yolo11n.pt")
 
 # 2. 이미지 경로 변수로 지정
-img_path = "./1_project_preparation/2_single_module_experiment/2_Jetson_Edge Detection/data/image/bus.jpg"
+img_path = "./data/image/bus.jpg"
 
 # 3. 이미지 추론
 results = model(img_path)
@@ -29,4 +29,4 @@ for r in results[0].boxes.xyxy.cpu().numpy():
     # 6. 원본에 그리기
     cv2.drawContours(img[y1:y2, x1:x2], contours, -1, (0,255,0), 2)
 
-cv2.imwrite("./1_project_preparation/2_single_module_experiment/2_Jetson_Edge Detection/data/image/bus_with_contours.jpg", img)
+cv2.imwrite("./data/image/bus_with_contours.jpg", img)
