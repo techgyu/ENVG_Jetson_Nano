@@ -109,3 +109,10 @@ git fetch origin
 ```bash
 git log HEAD..origin/main --oneline
 ```
+
+## 9. 기존 git 내용 밀어버리고 원격 저장소 내용으로 덮어쓰기
+```bash
+git fetch origin
+git reset --hard origin/main
+git clean -f -d
+```
