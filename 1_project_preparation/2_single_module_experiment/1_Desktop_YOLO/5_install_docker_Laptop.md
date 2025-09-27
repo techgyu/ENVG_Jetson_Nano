@@ -135,7 +135,4 @@ uv                     0.8.22
 wheel                  0.45.1
 ```
 
-## 14. 기존 아나콘다 환경에서 돌렸던 코드 정상 작동 확인
-2_test_yolo11n_segmentation.py ->
-3_test_yolo11n_segmentation_in_video.py ->
-4_intergrate_frame_to_video.py ->
+---
