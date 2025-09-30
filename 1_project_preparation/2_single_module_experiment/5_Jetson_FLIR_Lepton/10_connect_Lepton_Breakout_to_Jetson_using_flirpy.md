@@ -129,6 +129,13 @@ sudo docker run -it --name jetson_yolo11_v1_FLIR \
   --runtime=nvidia \
   my_yolo11n_image:v1 /bin/bash
 ```
+
+**도커 재접속**
+```bash
+sudo docker start jetson_yolo11_v1_FLIR
+sudo docker exec -it jetson_yolo11_v1_FLIR /bin/bash
+```
+-it 옵션: 컨테이너 안에서 bash 등 셀을 직접 조작할 수 있는 터미널 환경을 열어줌.
 > 위 명령은 SPI, 볼륨 마운트, NVIDIA 런타임, IPC 옵션까지 모두 포함한 예시입니다.
 
 ## 9. 새로 생성된 도커 컨테이너에 flirpy 설치
@@ -244,4 +251,24 @@ with Lepton(SPI_DEVICE) as cam:
   print("이미지 저장 완료. (lepton_capture_XX.png)")
 ```
 
-## 8. git으로 Jetson Nano에 예제 코드 복사
+## 8. git으로 Jetson Nano에 예제 코드 복사 후 실험 진행
+```bash
+python3 11_test_flirpy_Lepton.py
+```
+
+## 9. /dev/spidev1.0 오류 발생
+```bash
+root@8b936f9a1224:/workspace/1_project_preparation/2_single_module_experiment/5_Jetson_FLIR_Lepton# python3 11_test_flirpy_Lepton.py
+Traceback (most recent call last):
+  File "11_test_flirpy_Lepton.py", line 20, in <module>
+    with Lepton(SPI_DEVICE) as cam:
+  File "/usr/local/lib/python3.8/dist-packages/flirpy/camera/lepton.py", line 16, in __init__
+    logging.basicConfig(level=loglevel)
+  File "/usr/lib/python3.8/logging/__init__.py", line 1991, in basicConfig
+    root.setLevel(level)
+  File "/usr/lib/python3.8/logging/__init__.py", line 1409, in setLevel
+    self.level = _checkLevel(level)
+  File "/usr/lib/python3.8/logging/__init__.py", line 194, in _checkLevel
+    raise ValueError("Unknown level: %r" % level)
+ValueError: Unknown level: '/dev/spidev1.0
+```

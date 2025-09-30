@@ -16,8 +16,8 @@ import numpy as np
 # 본 예제에서는 SPI_2_CS0 (J41 18번) 사용 시 /dev/spidev1.0이 일반적
 SPI_DEVICE = "/dev/spidev1.0"
 
-# Lepton 카메라 열기
-with Lepton(SPI_DEVICE) as cam:
+ # Lepton 카메라 열기
+with Lepton(device=SPI_DEVICE) as cam:
   print("FLIR Lepton 연결 성공!")
   for i in range(10):
     frame, _ = cam.capture()
