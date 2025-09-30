@@ -270,5 +270,34 @@ Traceback (most recent call last):
     self.level = _checkLevel(level)
   File "/usr/lib/python3.8/logging/__init__.py", line 194, in _checkLevel
     raise ValueError("Unknown level: %r" % level)
-ValueError: Unknown level: '/dev/spidev1.0
+ValueError: Unknown level: '/dev/spidev1.0' 
 ```
+## 10. with Lepton(device=SPI_DEVICE) as cam: 오류 발생
+```bash
+root@8b936f9a1224:/workspace/1_project_preparation/2_single_module_experiment/5_Jetson_FLIR_Lepton# python3 11_test_flirpy_Lepton.py
+Exception ignored in: <function Core.__del__ at 0x7fb6634820>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.8/dist-packages/flirpy/camera/core.py", line 46, in __del__
+    self.close()
+  File "/usr/local/lib/python3.8/dist-packages/flirpy/camera/core.py", line 36, in close
+    self.disconnect()
+  File "/usr/local/lib/python3.8/dist-packages/flirpy/camera/core.py", line 28, in disconnect
+    if self.conn is not None:
+AttributeError: 'Lepton' object has no attribute 'conn'
+Traceback (most recent call last):
+  File "11_test_flirpy_Lepton.py", line 20, in <module>
+    with Lepton(device=SPI_DEVICE) as cam:
+TypeError: __init__() got an unexpected keyword argument 'device'
+```
+
+## 11. flirpy 실험 결론
+[LJMUAstroecology/flirpy_깃허브](https://github.com/LJMUAstroecology/flirpy)
+readme.md에 따르면, flirpy는 SPI을 이용한 카메라 연결을 지원하지 않음.
+```markdown
+Coming soon
+
+FLIR Lepton low level (SPI)
+Documentation...
+```
+
+**따라서 다른 라이브러리를 이용할 필요가 있음**
