@@ -47,7 +47,7 @@ void set_rgb_mode(bool enable); // RGB 모드 설정 함수
 int main (int argc, char *argv[]) // 메인 함수
 {
     cout << "OpenCV demo for Lepton3 on Nvidia Jetson" << std::endl; // 시작 메시지 출력
-
+    printf("Code 1\n");
     // ----> Set Ctrl+C handler
     /*구조체란: 여러 개의 변수(데이터)를 하나로 묶어서 새로운 자료형을 만드는 방법*/
     /*파이썬의 딕셔너리와 비슷하게 여러 값을 한 번에 담을 수 있지만*/
@@ -66,25 +66,25 @@ int main (int argc, char *argv[]) // 메인 함수
     // SIGINT(CTRL + C)가 들어오면 위의 시그널 핸들러(종료 시그널 처리 함수)를 호출하여 처리함
     // 마지막에 들어가 있는 NULL은 이전 핸들러를 저장하지 않음을 의미
     // <---- Set Ctrl+C handler
-
+    printf("Code 2\n");
     Lepton3::DebugLvl deb_lvl = Lepton3::DBG_NONE; // 디버그 레벨 설정
     // Lepton3 카메라 라이브러리에서 제공하는 디버그 레벨(enum)타입 중 "아무 메세지도 출력하지 않는" 모드로 설정
     // 만약 DBG_NONE 대신 DBG_INFO나 DBG_FULL로 설정하면, 카메라와 통신하면서 발생하는 다양한 정보성 메시지들이 출력됨
-
+    printf("Code 3\n");
     /* 실제로 Lepton 3 카메라를 제어할 객체를 동적으로 생성 */
     lepton3 = new Lepton3( "/dev/spidev1.0", "/dev/i2c-0", deb_lvl ); // Lepton3 객체 생성 (SPI, I2C 포트 지정)
     // "/dev/spidev0.0": SPI 장치 파일 경로, "/dev/i2c-0": I2C 장치 파일 경로
-
+    printf("Code 4\n");
     /* 카메라 통신 시작 */
     lepton3->start(); // 카메라 시작
     // 내부적으로 SPI/I2C 장치를 열고, 초기화 과정을 거쳐 데이터 수신 준비를 함
     // 이 함수가 호출되어야 이후에 프레임을 정상적으로 읽을 수 있음
-
+    printf("Code 5\n");
     // Set initial data mode
     set_rgb_mode(rgb_mode); // 초기 RGB 모드 설정
     // 현재 rgb_mode 전역 변수의 값(true)이 전달되어, RGB 모드로 카메라가 설정됨
     // 설정할 수 있는 모드에는 RGB 모드(true)와 Radiometry 모드(false)가 있음
-
+    printf("Code 6\n");
     uint64_t frameIdx=0; // 프레임 인덱스: 현재까지 처리한 프레임(이미지) 개수를 세는 변수, 루프가 돌 떄마다 1씩 증가
     uint16_t min; // 최소값: 카메라에서 받아온 이미지의 최소 픽셀 값
     uint16_t max; // 최대값: 카메라에서 받아온 이미지의 최대 픽셀 값
@@ -93,43 +93,51 @@ int main (int argc, char *argv[]) // 메인 함수
     // 현재 프레임(이미지)의 가로(w)와 세로(h) 크기를 저장하는 변수
     // 카메라에서 프레임을 읽어올 때, 실제 이미지의 해상도를 이 변수에 저장해서 이후 이미지 처리에 사용함.
     // 만약 카메라가 160X120 해상도라면, w=160, h=120이 됨(실제 카메라의 해상도에 따라 값이 달라짐)
-
+    printf("Code 7\n");
     /*프레임 처리 속도(프레임 간 시간 간격, FPS 등)을 측정하기 위한 스톱워치(타이머 기능)*/
     StopWatch stpWtc; // 스톱워치 객체
-
+    printf("Code 8\n");
     stpWtc.tic(); // 시간 측정 시작, stpWtc.toc()를 호출하면 tic()를 호출한 시점부터 얼마나 시간이 흘렀는지(마이크로초 단위 등)으로 알려줌
-
+    printf("Code 9\n");
     while(!close) // 종료 플래그가 false일 때 반복
     {
+        printf("Code 10\n");
         const uint16_t* data16 = lepton3->getLastFrame16( w, h, &min, &max ); // 16비트 프레임 데이터 가져오기
         // Lepton 카메라에서 Radiometry(16비트 온도값) 모드로 촬영한 프레임 데이터를 가져옴, 만약에 없으면 nullptr 반환
+        printf("Code 11\n");
         const uint8_t* dataRGB = lepton3->getLastFrameRGB( w, h ); // RGB 프레임 데이터 가져오기
         // Lepton 카메라에서 RGB(3채널 컬러맵) 모드로 촬영한 프레임 데이터를 가져옴, 만약에 없으면 nullptr 반환
-
+        printf("Code 12\n");
         cv::Mat dispFrame; // 표시용 프레임
         // cv::Mat은 OpenCV에서 제공하는 행렬(이미지) 자료형
         // cv::Mat dispFrame;는 화면에 표시할 이미지를 저장하는 변수로 사용됨
-
+        printf("Code 13\n");
         if( data16 || dataRGB ) // 데이터가 있으면(둘다 nullptr이 아니라면)
         {
+            printf("Code 14\n");
             double period_usec = stpWtc.toc(); // 프레임 주기 측정
+            printf("Code 15\n");
             stpWtc.tic(); // 시간 측정 재시작(다음 프레임 측정 준비)
-
+            printf("Code 16\n");
             double freq = (1000.*1000.)/period_usec; // FPS 계산
-
+            printf("Code 17\n");
             cv::Mat frame16( h, w, CV_16UC1 ); // 16비트 프레임(온도 값)
             cv::Mat frameRGB( h, w, CV_8UC3 ); // RGB 프레임(RGB)
-
+            printf("Code 18\n");
             if(rgb_mode && dataRGB) // RGB 모드일 때(rgb_mode가 true이고, dataRGB가 nullptr이 아닐 때)
             {
+                printf("Code 19\n");
                 memcpy( frameRGB.data, dataRGB, 3*w*h*sizeof(uint8_t) ); // 데이터 복사
                 // frameRGB.data: OpenCV 행렬의 원시 데이터 포인터
                 // dataRGB: 카메라에서 읽어온 RGB 이미지 데이터 포인터
                 // 3*w*h*sizeof(uint8_t): 복사할 데이터 크기(3채널, 가로w, 세로h, 각 픽셀당 1바이트)
+                printf("Code 20\n");
                 cv::cvtColor(frameRGB, dispFrame, cv::COLOR_RGB2BGR ); // BGR로 변환
             }
+            printf("Code 21\n");
             else if( !rgb_mode && data16 ) // Radiometry 모드일 때(rgb_mode가 false이고, data16이 nullptr이 아닐 때)
             {
+                printf("Code 22\n");
                 memcpy( frame16.data, data16, w*h*sizeof(uint16_t) ); // 데이터 복사
                 // frame16.data: OpenCV 행렬의 원시 데이터 포인터
                 // data16: 카메라에서 읽어온 16비트 온도값
@@ -138,52 +146,63 @@ int main (int argc, char *argv[]) // 메인 함수
 
                 // ----> Rescaling/Normalization to 8bit
                 // 정규화(명암 대비 조정) 및 8비트 스케일링
+                printf("Code 23\n");
                 double diff = static_cast<double>(max - min); // 이미지 범위 계산
                 // max, min: 카메라에서 읽어온 이미지의 최대/최소 픽셀 값
                 // diff: 이미지의 픽셀 값 범위(최대값 - 최소값)
+                printf("Code 24\n");
                 double scale = 255./diff; // 스케일 팩터 계산
                 // 0~65535 범위의 16비트 온도값을 0~255 범위의 8비트 값으로 변환하기 위한 스케일링 계수   
-
+                printf("Code 25\n");
                 frame16 -= min; // 바이어스 제거(최소값 만큼 빼서 0부터 시작)
+                printf("Code 26\n");
                 frame16 *= scale; // 데이터 리스케일(0 ~ 255 범위로 스케일링)
-
+                printf("Code 27\n");
                 frame16.convertTo( dispFrame, CV_8UC3 ); // 8비트로 변환(화면에 표시할 수 있도록)
                 // <---- Rescaling/Normalization to 8bit
             }
-
+            printf("Code 28\n");
             cv::Mat rescaledImg; // 리사이즈용 이미지
+            printf("Code 29\n");
             cv::resize( dispFrame, rescaledImg, cv::Size(), 3.0, 3.0); // 3배 확대
             // dispFrame: 원본 이미지
             // rescaledImg: 리사이즈된 이미지
             // cv::Size(): 새로운 이미지 크기 지정, 빈 값이면 다음 두 개의 인자(가로, 세로 스케일 팩터)를 사용
             // 3.0, 3.0: 가로/세로 각각 3배 확대
+            printf("Code 30\n");
             cv::imshow( "Stream", rescaledImg ); // 이미지 표시
             // "Stream": 윈도우 이름
             // rescaledImg: 화면에 표시할 이미지
+            printf("Code 31\n");
             int key = cv::waitKey(5); // 키 입력 대기
             // 5밀리초 동안 키보드 입력을 대기하고, 입력된 키 값을 반환함
             // 만약 5밀리초 내에 키가 눌리지 않으면 -1을 반환함
+            printf("Code 32\n");
             if( key == 'q' || key == 'Q') // q/Q 입력 시
             {
+                printf("Code 33\n");
                 close=true; // 종료
             }
-
+            printf("Code 34\n");
             keyboard_handler(key); // 키보드 핸들러 호출
-
+            printf("Code 35\n");
             frameIdx++; // 프레임 인덱스 증가
-
+            printf("Code 36\n");
             if( deb_lvl>=Lepton3::DBG_INFO  ) // 디버그 레벨이 INFO 이상이면
-            {
+            {   
+                printf("Code 37\n");
                 cout << "> Frame period: " << period_usec <<  " usec - FPS: " << freq << std::endl; // 프레임 정보 출력
+                printf("Code 38\n");
             }
         }
-
+        printf("Code 39\n");
         std::this_thread::sleep_for(std::chrono::milliseconds(5)); // 5ms 대기
         // CPU 점유율을 낮추기 위해 5밀리초 동안 대기
     }
+    printf("Code 40\n");
     // 만약 close 플래그가 true가 되면(예: 사용자가 'q'키를 누르거나 Ctrl+C 시그널이 들어오면) 루프가 종료됨
     delete lepton3; // 객체 해제
-
+    printf("Code 41\n");
     return EXIT_SUCCESS; // 정상 종료
 }
 
