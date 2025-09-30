@@ -103,9 +103,25 @@ int main (int argc, char *argv[]) // 메인 함수
     {
         printf("Code 10\n");
         const uint16_t* data16 = lepton3->getLastFrame16( w, h, &min, &max ); // 16비트 프레임 데이터 가져오기
+        printf("w: %d, h: %d, min: %u, max: %u\n", w, h, min, max);
+        printf("frameIdx: %llu\n", frameIdx);
+        printf("rgb_mode: %d\n", rgb_mode); 
+        if (data16 == nullptr) {
+            printf("data16 is NULL\n");
+        } else {
+            printf("data16: %p\n", data16);
+        }
         // Lepton 카메라에서 Radiometry(16비트 온도값) 모드로 촬영한 프레임 데이터를 가져옴, 만약에 없으면 nullptr 반환
         printf("Code 11\n");
         const uint8_t* dataRGB = lepton3->getLastFrameRGB( w, h ); // RGB 프레임 데이터 가져오기
+        printf("w: %d, h: %d, min: %u, max: %u\n", w, h, min, max);
+        printf("frameIdx: %llu\n", frameIdx);
+        printf("rgb_mode: %d\n", rgb_mode);         
+        if (dataRGB == nullptr) {
+            printf("dataRGB is NULL\n");
+        } else {
+            printf("dataRGB: %p\n", dataRGB);
+        }
         // Lepton 카메라에서 RGB(3채널 컬러맵) 모드로 촬영한 프레임 데이터를 가져옴, 만약에 없으면 nullptr 반환
         printf("Code 12\n");
         cv::Mat dispFrame; // 표시용 프레임
@@ -134,7 +150,6 @@ int main (int argc, char *argv[]) // 메인 함수
                 printf("Code 20\n");
                 cv::cvtColor(frameRGB, dispFrame, cv::COLOR_RGB2BGR ); // BGR로 변환
             }
-            printf("Code 21\n");
             else if( !rgb_mode && data16 ) // Radiometry 모드일 때(rgb_mode가 false이고, data16이 nullptr이 아닐 때)
             {
                 printf("Code 22\n");
@@ -199,10 +214,8 @@ int main (int argc, char *argv[]) // 메인 함수
         std::this_thread::sleep_for(std::chrono::milliseconds(5)); // 5ms 대기
         // CPU 점유율을 낮추기 위해 5밀리초 동안 대기
     }
-    printf("Code 40\n");
     // 만약 close 플래그가 true가 되면(예: 사용자가 'q'키를 누르거나 Ctrl+C 시그널이 들어오면) 루프가 종료됨
     delete lepton3; // 객체 해제
-    printf("Code 41\n");
     return EXIT_SUCCESS; // 정상 종료
 }
 
