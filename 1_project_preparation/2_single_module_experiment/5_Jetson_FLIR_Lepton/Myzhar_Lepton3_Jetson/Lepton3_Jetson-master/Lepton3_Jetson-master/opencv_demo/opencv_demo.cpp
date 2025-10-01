@@ -67,7 +67,7 @@ int main (int argc, char *argv[]) // 메인 함수
     // 마지막에 들어가 있는 NULL은 이전 핸들러를 저장하지 않음을 의미
     // <---- Set Ctrl+C handler
     printf("Code 2\n");
-    Lepton3::DebugLvl deb_lvl = Lepton3::DBG_NONE; // 디버그 레벨 설정
+    Lepton3::DebugLvl deb_lvl = Lepton3::DBG_FULL; // 디버그 레벨 설정
     // Lepton3 카메라 라이브러리에서 제공하는 디버그 레벨(enum)타입 중 "아무 메세지도 출력하지 않는" 모드로 설정
     // 만약 DBG_NONE 대신 DBG_INFO나 DBG_FULL로 설정하면, 카메라와 통신하면서 발생하는 다양한 정보성 메시지들이 출력됨
     printf("Code 3\n");
