@@ -72,7 +72,7 @@ int main (int argc, char *argv[]) // 메인 함수
     // 만약 DBG_NONE 대신 DBG_INFO나 DBG_FULL로 설정하면, 카메라와 통신하면서 발생하는 다양한 정보성 메시지들이 출력됨
     printf("Code 3\n");
     /* 실제로 Lepton 3 카메라를 제어할 객체를 동적으로 생성 */
-    lepton3 = new Lepton3( "/dev/spidev1.0", "/dev/i2c-0", deb_lvl ); // Lepton3 객체 생성 (SPI, I2C 포트 지정)
+    lepton3 = new Lepton3( "/dev/spidev0.0", "/dev/i2c-0", deb_lvl ); // Lepton3 객체 생성 (SPI, I2C 포트 지정)
     // "/dev/spidev0.0": SPI 장치 파일 경로, "/dev/i2c-0": I2C 장치 파일 경로
     printf("Code 4\n");
     /* 카메라 통신 시작 */
