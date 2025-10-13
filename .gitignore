@@ -8,6 +8,7 @@
 1_project_preparation/2_single_module_experiment/2_Desktop_YOLO11n_seg/data
 1_project_preparation/2_single_module_experiment/3_Jetson_YOLO/1_preparation/data
 1_project_preparation/2_single_module_experiment/4_Jetson_Edge Detection/data
-1_project_preparation/2_single_module_experiment/5_Jetson_FLIR_Lepton/document
+1_project_preparation/2_single_module_experiment/5_Jetson_FLIR_Lepton/Archive/data
+1_project_preparation/2_single_module_experiment/5_Jetson_FLIR_Lepton/Archive/document
 
 # Ignore Reference Folders
