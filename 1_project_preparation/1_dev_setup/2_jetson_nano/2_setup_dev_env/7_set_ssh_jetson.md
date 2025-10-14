@@ -5,7 +5,7 @@
 
 ## 1. OpenSSH Server 설치
 1. 터미널 열기 (Ctrl + Alt + T)
-2. 패키지 목록 업데이트:
+2. 패키지 목록 업데이트: 
    ```bash
    sudo apt update
    ```
